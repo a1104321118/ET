@@ -70,7 +70,7 @@ public class ExcelTool {
     }
 
     /**
-     * 读取数据，从 begin 到 num
+     * 读取数据，从 begin 开始，数量为num
      * @param clazz
      * @param begin
      * @param num
@@ -102,14 +102,14 @@ public class ExcelTool {
         }
 
         for (int i=begin; i<end; i++){//对每一行数据进行处理
-            Cell[] row = sheet.getRow(i);
-            T t = clazz.newInstance();
-            for (int j=0; j<row.length; j++){
-                String thisCloumnName = cloumnNames.get(j);
+            Cell[] row = sheet.getRow(i);//获得这一行的数据
+            T t = clazz.newInstance(); //通过反射实例化泛型对象
+            for (int j=0; j<row.length; j++){//对这一行的数据进行一个一个处理
+                String thisCloumnName = cloumnNames.get(j);//先获得列名
                 for (Field field : fields){
-                    if(thisCloumnName.equals(field.getName())){
+                    if(thisCloumnName.equals(field.getName())){//当列名和这个属性的名称一样时，认为他们相互映射
                         field.setAccessible(true);
-                        field.set(t, row[j].getContents());
+                        field.set(t, row[j].getContents());//设置属性值
                     }
                 }
             }
@@ -153,13 +153,13 @@ public class ExcelTool {
         for (int i=0; i<fields.length; i++){
             head[i] = new Label(i, 0, fields[i].getName());
         }
-        writeLine(sheet, head);
+        writeLine(sheet, head);//先把Person的属性都写入excel的第一行
 
         //写入数据
         try {
-            for (int i = 0; i < data.size(); i++) {
+            for (int i = 0; i < data.size(); i++) {//开始写list里面的数据
                 T result = data.get(i);
-                for (int j = 0; j < fields.length; j++) {
+                for (int j = 0; j < fields.length; j++) {//逐个写属性
 
                     Field field = result.getClass().getDeclaredField(fields[j].getName());
                     field.setAccessible(true);
